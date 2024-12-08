@@ -65,7 +65,58 @@ Created new features to capture deeper insights:
 |----------------------------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
 | `Loan Percent Income Interaction` | `loan_percent_income * cb_person_cred_hist_length`.                                                  | Combines income dependency with credit history.       |
 
+
 ---
+
+## Key Steps in Calculating WOE and IV
+
+### 1. **WOE Calculation for Categorical Variables**
+
+The process includes:
+- Generating a frequency table for each categorical variable against the target variable (`loan_status`), categorizing values into "Event" (default) and "Non-Event" (no default).
+- Calculating the percentage of "Event" and "Non-Event" for each category of the variable.
+- Computing the WOE values using the natural logarithm of the ratio of "Non-Event%" to "Event%."
+- Determining the IV values by multiplying the difference between "Non-Event%" and "Event%" with the WOE value.
+- Organizing the results into a consolidated DataFrame for all categorical variables.
+
+---
+
+### 2. **WOE Calculation for Numerical Variables**
+
+The process involves:
+- Using an optimal binning technique to group numerical variables into bins based on their relationship with the target variable.
+- For each bin:
+  - Determining the boundaries (lower and upper limits) of the numerical ranges.
+  - Calculating WOE and IV values similarly to categorical variables.
+- Storing the results in a final table for all numerical features.
+
+---
+
+### 3. **Integration of WOE Values in the Dataset**
+
+- Numerical features are replaced with their corresponding WOE values by checking which bin each value falls into and applying the precomputed WOE value for that bin.
+- Categorical features are directly mapped to their WOE values based on the precomputed table.
+
+---
+
+### 4. **Significance of WOE and IV**
+
+- **WOE**:
+  - Measures the predictive power of individual bins for a variable.
+  - Values closer to zero indicate weaker predictive ability.
+- **IV**:
+  - Summarizes the predictive strength of the entire variable.
+  - Interpretation of IV values:
+    - IV < 0.02: Not predictive.
+    - 0.02 ≤ IV < 0.1: Weak predictive power.
+    - 0.1 ≤ IV < 0.3: Medium predictive power.
+    - IV ≥ 0.3: Strong predictive power.
+
+---
+
+This process ensures that the model uses features with high predictive power while avoiding bias introduced by raw numerical or categorical values.
+
+
 
 ### 4. **Feature Selection**
 - **Methods Used:** Correlation matrix, Information Value (IV), decision tree importances, Recursive Feature Elimination (RFE).  
